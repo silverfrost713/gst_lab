@@ -1,0 +1,3 @@
+﻿  generate.c
+D:\opt\msvs_projects\gst_lab\generate.c(106,5): warning C4013: close: нет определения; предполагается "extern" с возвратом типа "int"
+  gst_lab.vcxproj -> D:\opt\msvs_projects\gst_lab\Debug\gst_lab.exe

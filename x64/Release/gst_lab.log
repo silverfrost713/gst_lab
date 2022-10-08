@@ -1,0 +1,6 @@
+﻿  generate.c
+  logic.c
+  Создание кода
+  Not all modules are compiled with -Gy (function comdat), build without incremental LTCG.
+  Создание кода завершено
+  gst_lab.vcxproj -> D:\opt\msvs_projects\gst_lab\x64\Release\gst_lab.exe
