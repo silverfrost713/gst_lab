@@ -9,6 +9,7 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <omp.h>
+#include <mpi.h>
 
 #define DEF_BUFLEN 32
 #define AES_PORT "21522"
@@ -284,6 +285,62 @@ struct AESMatrix* aes_unflatten_matrices(char* aes_matrices_flat, size_t aes_dat
 	fprintf(stdout, "INFO: displaying last matrix -\n");
 	aes_matrix_display(aes_matrices[aes_matrix_qty - 1]);
 	return aes_matrices;
+}
+
+int aes_shiftrows_mpi(char* aes_matrices_flat, size_t aes_datasize, size_t* matrix_qty) {
+	fprintf(stdout, "INFO: unflattening matrices.\n");
+	/* Проверить указатель. */
+	if (!aes_matrices_flat) {
+		fprintf(stderr, "ERROR in aes_unflatten_matrices(): got null pointer.\n");
+		return -1;
+	}
+	aesbyte_t aes_side_len = (aesbyte_t)aes_matrices_flat[0];
+	size_t aes_matrix_size = (size_t)aes_side_len * (size_t)aes_side_len + 1;
+	size_t aes_matrix_qty = aes_datasize / aes_matrix_size;
+	fprintf(stdout, "INFO: matrix size is %llu bytes, matrix side length is %d.\n", aes_matrix_size, aes_side_len);
+	*matrix_qty = aes_matrix_qty;
+	fprintf(stdout, "INFO: ID0 - creating a contiguous MPI data type for metadata.\n");
+	clock_t start = clock();
+	MPI_Datatype MPI_AES_META;
+	MPI_Type_contiguous(2, MPI_UNSIGNED_LONG_LONG, &MPI_AES_META);
+	MPI_Type_commit(&MPI_AES_META);
+	size_t aes_meta[2];
+	aes_meta[0] = aes_matrix_size;
+	fprintf(stdout, "INFO: ID0 - async-broadcasting matrix size and quantity metadata.\n");
+	MPI_Request req[7];
+	int comm_size;
+	MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+	size_t portion = aes_matrix_qty / comm_size;
+	size_t last_portion = aes_matrix_qty - portion * (comm_size - 1);
+	for (int i = 1; i < comm_size; i += 1) {
+		aes_meta[1] = (i == comm_size - 1) ? last_portion : portion;
+		MPI_Isend(aes_meta, 1, MPI_AES_META, i, 0, MPI_COMM_WORLD, &(req[i - 1]));
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
+	fprintf(stdout, "INFO: ID0 - creating a contiguous MPI data type for AES matrix.\n");
+	MPI_Datatype MPI_AES_MATRIX;
+	MPI_Type_contiguous(aes_matrix_size, MPI_CHAR, &MPI_AES_MATRIX);
+	MPI_Type_commit(&MPI_AES_MATRIX);
+	fprintf(stdout, "INFO: ID0 - async-broadcasting matrix array portions.\n");
+	for (int i = 1; i < comm_size; i += 1) {
+		MPI_Isend(aes_matrices_flat + (portion * i * aes_matrix_size), (i == comm_size - 1) ? last_portion : portion, MPI_AES_MATRIX, i, 0, MPI_COMM_WORLD, &(req[i - 1]));
+	}
+	fprintf(stdout, "INFO: ID0 - performing AES shift on my portion.\n");
+	aesbyte_t* temp_row = (aesbyte_t*)malloc(sizeof(aesbyte_t) * aes_matrices_flat[0]);
+	for (size_t k = 0; k < matrix_qty; k += 1) {
+		for (aesbyte_t i = 0; i < (aesbyte_t)aes_matrices_flat[0]; i += 1) {
+			for (aesbyte_t j = 0; j < (aesbyte_t)aes_matrices_flat[0]; j += 1)
+				temp_row[j] = aes_matrices_flat[(k * aes_matrix_size + 1) + i * aes_matrices_flat[0] + j];
+			for (aesbyte_t j = 0; j < (aesbyte_t)aes_matrices_flat[0]; j += 1)
+				aes_matrices_flat[(k * aes_matrix_size + 1) + i * aes_matrices_flat[0] + j] = temp_row[(i + j) % aes_matrices_flat[0]];
+		}
+	}
+	for (int i = 1; i < comm_size; i += 1) {
+		MPI_Irecv(aes_matrices_flat + (portion * i * aes_matrix_size), (i == comm_size - 1) ? last_portion : portion, MPI_AES_MATRIX, i, 0, MPI_COMM_WORLD, &(req[i - 1]));
+	}
+	MPI_Barrier(MPI_COMM_WORLD);
+	clock_t end = (clock() - start) / (CLOCKS_PER_SEC / 1000);
+	return (int)end;
 }
 
 int aes_shiftrows_serial(struct AESMatrix* m_arr, size_t matrix_qty) {
@@ -578,7 +635,7 @@ int tcp_recv_time(SOCKET connect_socket) {
 	fprintf(stdout, "INFO: received time info: %d bytes, buffer is \"%s\".\n", recv_res, tcp_time_recvbuf);
 	tcp_time = atoi(tcp_time_recvbuf);
 	if (!tcp_time) {
-		fprintf(stderr, "ERROR in tcp_recv_time(): received invalid data size \"%s\".\n", tcp_time_recvbuf);
+		fprintf(stderr, "ERROR in tcp_recv_time(): received invalid time \"%s\".\n", tcp_time_recvbuf);
 		closesocket(connect_socket);
 		WSACleanup();
 		return -1;

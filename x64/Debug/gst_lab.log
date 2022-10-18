@@ -1,4 +1,12 @@
-﻿  generate.c
+﻿cl : командная строка  warning D9025: переопределение "/sdl" на "/GS-"
+  generate.c
   logic.c
+D:\opt\msvs_projects\gst_lab\aes_matrix.h(322,22): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
+D:\opt\msvs_projects\gst_lab\aes_matrix.h(326,87): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
+D:\opt\msvs_projects\gst_lab\aes_matrix.h(330,35): warning C4047: <: "size_t" отличается по уровням косвенного обращения от "size_t *"
+D:\opt\msvs_projects\gst_lab\aes_matrix.h(339,87): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
+D:\opt\msvs_projects\gst_lab\logic.c(91,31): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
+D:\opt\msvs_projects\gst_lab\logic.c(96,33): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
+D:\opt\msvs_projects\gst_lab\logic.c(109,33): warning C4267: функция: преобразование из "size_t" в "int"; возможна потеря данных
   Создание кода...
   gst_lab.vcxproj -> D:\opt\msvs_projects\gst_lab\x64\Debug\gst_lab.exe
