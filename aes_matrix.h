@@ -18,19 +18,19 @@
 typedef uint8_t aesbyte_t;
 
 struct AESMatrix {
-	/* Матрица представлена массивом байт. */
+	/* ГЊГ ГІГ°ГЁГ¶Г  ГЇГ°ГҐГ¤Г±ГІГ ГўГ«ГҐГ­Г  Г¬Г Г±Г±ГЁГўГ®Г¬ ГЎГ Г©ГІ. */
 	aesbyte_t* grid;
 	aesbyte_t side_len;
 };
 
-/* Функция инициализации матрицы. */
+/* Г”ГіГ­ГЄГ¶ГЁГї ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ Г¬Г ГІГ°ГЁГ¶Г». */
 void aes_matrix_init(struct AESMatrix* m, aesbyte_t side_len) {
-	/* Проверить длину стороны на корректность. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј Г¤Г«ГЁГ­Гі Г±ГІГ®Г°Г®Г­Г» Г­Г  ГЄГ®Г°Г°ГҐГЄГІГ­Г®Г±ГІГј. */
 	if (!side_len) {
 		fprintf(stderr, "ERROR in aes_matrix_init(): wrong side length specified \"%d\".\n", side_len);
 		return;
 	}
-	/* Задать длину стороны матрицы, выделить память и проверить указатель. */
+	/* Г‡Г Г¤Г ГІГј Г¤Г«ГЁГ­Гі Г±ГІГ®Г°Г®Г­Г» Г¬Г ГІГ°ГЁГ¶Г», ГўГ»Г¤ГҐГ«ГЁГІГј ГЇГ Г¬ГїГІГј ГЁ ГЇГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	m->side_len = side_len;
 	m->grid = (aesbyte_t*)malloc(sizeof(aesbyte_t) * side_len * side_len);
 	if (!m->grid) {
@@ -39,36 +39,36 @@ void aes_matrix_init(struct AESMatrix* m, aesbyte_t side_len) {
 	}
 }
 
-/* Функция удаления матрицы. */
+/* Г”ГіГ­ГЄГ¶ГЁГї ГіГ¤Г Г«ГҐГ­ГЁГї Г¬Г ГІГ°ГЁГ¶Г». */
 void aes_matrix_free(struct AESMatrix* m) {
-	/* Проверить указатели. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«ГЁ. */
 	if (!m) {
 		fprintf(stderr, "ERROR in aes_matrix_free(): got uninitialised matrix.\n");
 		return;
 	}
 	if (!m->grid)
 		fprintf(stderr, "WARNING in aes_matrix_free(): got null pointer.\n");
-	/* Освободить и указатель внутри матрицы, и указатель на саму матрицу. */
+	/* ГЋГ±ГўГ®ГЎГ®Г¤ГЁГІГј ГЁ ГіГЄГ Г§Г ГІГҐГ«Гј ГўГ­ГіГІГ°ГЁ Г¬Г ГІГ°ГЁГ¶Г», ГЁ ГіГЄГ Г§Г ГІГҐГ«Гј Г­Г  Г±Г Г¬Гі Г¬Г ГІГ°ГЁГ¶Гі. */
 	else
 		free(m->grid);
 }
 
-/* Функция вывода матрицы в стандартный вывод. */
+/* Г”ГіГ­ГЄГ¶ГЁГї ГўГ»ГўГ®Г¤Г  Г¬Г ГІГ°ГЁГ¶Г» Гў Г±ГІГ Г­Г¤Г Г°ГІГ­Г»Г© ГўГ»ГўГ®Г¤. */
 void aes_matrix_display(struct AESMatrix m) {
-	/* Проверить указатель. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	if (!m.grid) {
 		fprintf(stderr, "ERROR in aes_matrix_display(): got uninitialised matrix.\n");
 		return;
 	}
-	/* Проверить длину стороны матрицы. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј Г¤Г«ГЁГ­Гі Г±ГІГ®Г°Г®Г­Г» Г¬Г ГІГ°ГЁГ¶Г». */
 	if (!m.side_len) {
 		fprintf(stderr, "ERROR in aes_matrix_display(): got matrix with null size.\n");
 		return;
 	}
-	/* Вывести матрицу построчно в стандартный вывод. */
+	/* Г‚Г»ГўГҐГ±ГІГЁ Г¬Г ГІГ°ГЁГ¶Гі ГЇГ®Г±ГІГ°Г®Г·Г­Г® Гў Г±ГІГ Г­Г¤Г Г°ГІГ­Г»Г© ГўГ»ГўГ®Г¤. */
 	for (aesbyte_t i = 0; i < m.side_len; i += 1) {
 		for (aesbyte_t j = 0; j < m.side_len; j += 1)
-			/* Не плодить лишних пробелов на случай, если вывод направлен в файл. */
+			/* ГЌГҐ ГЇГ«Г®Г¤ГЁГІГј Г«ГЁГёГ­ГЁГµ ГЇГ°Г®ГЎГҐГ«Г®Гў Г­Г  Г±Г«ГіГ·Г Г©, ГҐГ±Г«ГЁ ГўГ»ГўГ®Г¤ Г­Г ГЇГ°Г ГўГ«ГҐГ­ Гў ГґГ Г©Г«. */
 			if (j != m.side_len - 1)
 				fprintf(stdout, "%3d   ", m.grid[i * m.side_len + j]);
 			else
@@ -77,37 +77,37 @@ void aes_matrix_display(struct AESMatrix m) {
 	}
 }
 
-/* Функция заполнения матрицы случайными байтами. */
+/* Г”ГіГ­ГЄГ¶ГЁГї Г§Г ГЇГ®Г«Г­ГҐГ­ГЁГї Г¬Г ГІГ°ГЁГ¶Г» Г±Г«ГіГ·Г Г©Г­Г»Г¬ГЁ ГЎГ Г©ГІГ Г¬ГЁ. */
 void aes_matrix_randomise(struct AESMatrix m) {
-	/* Проверить указатель. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	if (!m.grid) {
 		fprintf(stderr, "ERROR in aes_matrix_randomise(): got uninitialised matrix.\n");
 		return;
 	}
-	/* Проверить длину стороны матрицы. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј Г¤Г«ГЁГ­Гі Г±ГІГ®Г°Г®Г­Г» Г¬Г ГІГ°ГЁГ¶Г». */
 	if (!m.side_len) {
 		fprintf(stderr, "ERROR in aes_matrix_randomise(): got matrix with null size.\n");
 		return;
 	}
-	/* Заполнить матрицу случайными байтами. */
+	/* Г‡Г ГЇГ®Г«Г­ГЁГІГј Г¬Г ГІГ°ГЁГ¶Гі Г±Г«ГіГ·Г Г©Г­Г»Г¬ГЁ ГЎГ Г©ГІГ Г¬ГЁ. */
 	for (aesbyte_t i = 0; i < m.side_len * m.side_len; i += 1)
 		m.grid[i] = (aesbyte_t)rand();
 }
 
-/* Функция операции ShiftRows из AES. */
+/* Г”ГіГ­ГЄГ¶ГЁГї Г®ГЇГҐГ°Г Г¶ГЁГЁ ShiftRows ГЁГ§ AES. */
 void aes_matrix_shift_rows(struct AESMatrix m) {
-	/* Проверить указатель. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	if (!m.grid) {
 		fprintf(stderr, "ERROR in aes_matrix_shift_rows(): got uninitialised matrix.\n");
 		return;
 	}
-	/* Проверить длину стороны матрицы. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј Г¤Г«ГЁГ­Гі Г±ГІГ®Г°Г®Г­Г» Г¬Г ГІГ°ГЁГ¶Г». */
 	if (!m.side_len) {
 		fprintf(stderr, "ERROR in aes_matrix_shift_rows(): got matrix with null size.\n");
 		return;
 	}
-	/* Сдвигать матрицу влево построчно, на число элементов,
-	   равное индексу строки, начиная с нуля. */
+	/* Г‘Г¤ГўГЁГЈГ ГІГј Г¬Г ГІГ°ГЁГ¶Гі ГўГ«ГҐГўГ® ГЇГ®Г±ГІГ°Г®Г·Г­Г®, Г­Г  Г·ГЁГ±Г«Г® ГЅГ«ГҐГ¬ГҐГ­ГІГ®Гў,
+	   Г°Г ГўГ­Г®ГҐ ГЁГ­Г¤ГҐГЄГ±Гі Г±ГІГ°Г®ГЄГЁ, Г­Г Г·ГЁГ­Г Гї Г± Г­ГіГ«Гї. */
 	aesbyte_t* temp_row = (aesbyte_t*)malloc(sizeof(aesbyte_t) * m.side_len);
 	if (!temp_row) {
 		fprintf(stderr, "ERROR in aes_matrix_shift_rows(): couldn't allocate memory for temp row.\n");
@@ -123,16 +123,16 @@ void aes_matrix_shift_rows(struct AESMatrix m) {
 }
 
 int tcp_establish_conn_client(SOCKET* connect_socket) {
-	/* Сервер пока на localhost. */
+	/* Г‘ГҐГ°ГўГҐГ° ГЇГ®ГЄГ  Г­Г  localhost. */
 	const char* server_addr = "127.0.0.1";
-	/* WSADATA содержит сведения о реализации сокетов в Windows. */
+	/* WSADATA Г±Г®Г¤ГҐГ°Г¦ГЁГІ Г±ГўГҐГ¤ГҐГ­ГЁГї Г® Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГЁ Г±Г®ГЄГҐГІГ®Гў Гў Windows. */
 	WSADATA wsa_data;
-	/* Структуры addrinfo содержат данные об адресах и протоколах. */
+	/* Г‘ГІГ°ГіГЄГІГіГ°Г» addrinfo Г±Г®Г¤ГҐГ°Г¦Г ГІ Г¤Г Г­Г­Г»ГҐ Г®ГЎ Г Г¤Г°ГҐГ±Г Гµ ГЁ ГЇГ°Г®ГІГ®ГЄГ®Г«Г Гµ. */
 	struct addrinfo* result = NULL;
 	struct addrinfo hints;
 	int my_err;
-	/* WSAStartup запрашивает версию WinSocket 2.2 и не даёт клиентам
-	   использовать версию выше. */
+	/* WSAStartup Г§Г ГЇГ°Г ГёГЁГўГ ГҐГІ ГўГҐГ°Г±ГЁГѕ WinSocket 2.2 ГЁ Г­ГҐ Г¤Г ВёГІ ГЄГ«ГЁГҐГ­ГІГ Г¬
+	   ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ ГІГј ГўГҐГ°Г±ГЁГѕ ГўГ»ГёГҐ. */
 	fprintf(stdout, "INFO: initialising WinSocket2 on client.\n");
 	my_err = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (my_err) {
@@ -140,12 +140,12 @@ int tcp_establish_conn_client(SOCKET* connect_socket) {
 		WSACleanup();
 		return -1;
 	}
-	/* Задать соединение по протоколу TCP через сокет. */
+	/* Г‡Г Г¤Г ГІГј Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГҐ ГЇГ® ГЇГ°Г®ГІГ®ГЄГ®Г«Гі TCP Г·ГҐГ°ГҐГ§ Г±Г®ГЄГҐГІ. */
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	/* Разрешить адрес сервера с портом. */
+	/* ГђГ Г§Г°ГҐГёГЁГІГј Г Г¤Г°ГҐГ± Г±ГҐГ°ГўГҐГ°Г  Г± ГЇГ®Г°ГІГ®Г¬. */
 	fprintf(stdout, "INFO: resolving server address.\n");
 	my_err = getaddrinfo(server_addr, AES_PORT, &hints, &result);
 	if (my_err != 0) {
@@ -154,7 +154,7 @@ int tcp_establish_conn_client(SOCKET* connect_socket) {
 		return -1;
 	}
 	*connect_socket = INVALID_SOCKET;
-	/* Попытаться подключиться по адресу, полученному через getaddrinfo, создать сокет. */
+	/* ГЏГ®ГЇГ»ГІГ ГІГјГ±Гї ГЇГ®Г¤ГЄГ«ГѕГ·ГЁГІГјГ±Гї ГЇГ® Г Г¤Г°ГҐГ±Гі, ГЇГ®Г«ГіГ·ГҐГ­Г­Г®Г¬Гі Г·ГҐГ°ГҐГ§ getaddrinfo, Г±Г®Г§Г¤Г ГІГј Г±Г®ГЄГҐГІ. */
 	fprintf(stdout, "INFO: creating connect socket on client.\n");
 	*connect_socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (*connect_socket == INVALID_SOCKET) {
@@ -163,7 +163,7 @@ int tcp_establish_conn_client(SOCKET* connect_socket) {
 		WSACleanup();
 		return -1;
 	}
-	/* Подключиться к серверу. */
+	/* ГЏГ®Г¤ГЄГ«ГѕГ·ГЁГІГјГ±Гї ГЄ Г±ГҐГ°ГўГҐГ°Гі. */
 	fprintf(stdout, "INFO: connecting to server.\n");
 	my_err = connect(*connect_socket, result->ai_addr, (int)result->ai_addrlen);
 	if (my_err == SOCKET_ERROR) {
@@ -183,13 +183,13 @@ int tcp_establish_conn_client(SOCKET* connect_socket) {
 }
 
 char* tcp_receive_matrices(size_t* recv_datasize, SOCKET connect_socket) {
-	/* Буферы для приёма метаинформации о размере данных,
-	   а также для самих матриц. */
+	/* ГЃГіГґГҐГ°Г» Г¤Г«Гї ГЇГ°ГЁВёГ¬Г  Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ Г® Г°Г Г§Г¬ГҐГ°ГҐ Г¤Г Г­Г­Г»Гµ,
+	   Г  ГІГ ГЄГ¦ГҐ Г¤Г«Гї Г±Г Г¬ГЁГµ Г¬Г ГІГ°ГЁГ¶. */
 	char tcp_datasize_recvbuf[DEF_BUFLEN];
 	char* tcp_aes_data_recvbuf;
 	size_t tcp_datasize;
 	int recv_res;
-	/* Принять метаинформацию о размере пересылаемых данных с матрицами и выделить память. */
+	/* ГЏГ°ГЁГ­ГїГІГј Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГѕ Г® Г°Г Г§Г¬ГҐГ°ГҐ ГЇГҐГ°ГҐГ±Г»Г«Г ГҐГ¬Г»Гµ Г¤Г Г­Г­Г»Гµ Г± Г¬Г ГІГ°ГЁГ¶Г Г¬ГЁ ГЁ ГўГ»Г¤ГҐГ«ГЁГІГј ГЇГ Г¬ГїГІГј. */
 	memset(tcp_datasize_recvbuf, 0, DEF_BUFLEN);
 	recv_res = recv(connect_socket, tcp_datasize_recvbuf, DEF_BUFLEN, 0);
 	if (recv_res == 0) {
@@ -218,7 +218,7 @@ char* tcp_receive_matrices(size_t* recv_datasize, SOCKET connect_socket) {
 		WSACleanup();
 		return (char*)NULL;
 	}
-	/* Принять матрицы от сервера. */
+	/* ГЏГ°ГЁГ­ГїГІГј Г¬Г ГІГ°ГЁГ¶Г» Г®ГІ Г±ГҐГ°ГўГҐГ°Г . */
 	tcp_aes_data_recvbuf = (char*)malloc(tcp_datasize);
 	if (!tcp_aes_data_recvbuf) {
 		fprintf(stderr, "ERROR in tcp_receive_matrices(): couldn't allocate reception buffer memory.\n");
@@ -257,7 +257,7 @@ char* tcp_receive_matrices(size_t* recv_datasize, SOCKET connect_socket) {
 
 struct AESMatrix* aes_unflatten_matrices(char* aes_matrices_flat, size_t aes_datasize, size_t* matrix_qty) {
 	fprintf(stdout, "INFO: unflattening matrices.\n");
-	/* Проверить указатель. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	if (!aes_matrices_flat) {
 		fprintf(stderr, "ERROR in aes_unflatten_matrices(): got null pointer.\n");
 		return (struct AESMatrix*)NULL;
@@ -267,7 +267,7 @@ struct AESMatrix* aes_unflatten_matrices(char* aes_matrices_flat, size_t aes_dat
 	size_t aes_matrix_qty = aes_datasize / aes_matrix_size;
 	fprintf(stdout, "INFO: matrix size is %llu bytes, matrix side length is %d.\n", aes_matrix_size, aes_side_len);
 	*matrix_qty = aes_matrix_qty;
-	/* Рассчитать число матриц, в которое распакуется буфер. */
+	/* ГђГ Г±Г±Г·ГЁГІГ ГІГј Г·ГЁГ±Г«Г® Г¬Г ГІГ°ГЁГ¶, Гў ГЄГ®ГІГ®Г°Г®ГҐ Г°Г Г±ГЇГ ГЄГіГҐГІГ±Гї ГЎГіГґГҐГ°. */
 	fprintf(stdout, "INFO: allocating memory for %llu matrices.\n", aes_matrix_qty);
 	struct AESMatrix* aes_matrices = (struct AESMatrix*)malloc(sizeof(struct AESMatrix) * aes_matrix_qty);
 	if (!aes_matrices) {
@@ -289,7 +289,7 @@ struct AESMatrix* aes_unflatten_matrices(char* aes_matrices_flat, size_t aes_dat
 
 int aes_shiftrows_mpi(char* aes_matrices_flat, size_t aes_datasize, size_t* matrix_qty) {
 	fprintf(stdout, "INFO: unflattening matrices.\n");
-	/* Проверить указатель. */
+	/* ГЏГ°Г®ГўГҐГ°ГЁГІГј ГіГЄГ Г§Г ГІГҐГ«Гј. */
 	if (!aes_matrices_flat) {
 		fprintf(stderr, "ERROR in aes_unflatten_matrices(): got null pointer.\n");
 		return -1;
@@ -327,7 +327,7 @@ int aes_shiftrows_mpi(char* aes_matrices_flat, size_t aes_datasize, size_t* matr
 	}
 	fprintf(stdout, "INFO: ID0 - performing AES shift on my portion.\n");
 	aesbyte_t* temp_row = (aesbyte_t*)malloc(sizeof(aesbyte_t) * aes_matrices_flat[0]);
-	for (size_t k = 0; k < matrix_qty; k += 1) {
+	for (size_t k = 0; k < portion; k += 1) {
 		for (aesbyte_t i = 0; i < (aesbyte_t)aes_matrices_flat[0]; i += 1) {
 			for (aesbyte_t j = 0; j < (aesbyte_t)aes_matrices_flat[0]; j += 1)
 				temp_row[j] = aes_matrices_flat[(k * aes_matrix_size + 1) + i * aes_matrices_flat[0] + j];
@@ -402,7 +402,7 @@ int aes_shiftrows_openmp(struct AESMatrix* m_arr, size_t matrix_qty) {
 
 int tcp_close_conn_server(SOCKET client_socket) {
 	int my_err;
-	/* Закрыть соединение. */
+	/* Г‡Г ГЄГ°Г»ГІГј Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГҐ. */
 	fprintf(stdout, "INFO: shutting down connection on server.\n");
 	my_err = shutdown(client_socket, SD_SEND);
 	if (my_err == SOCKET_ERROR) {
@@ -421,22 +421,22 @@ struct AESMatrix* generate_matrices(size_t gen_data_size, aesbyte_t gen_matrix_s
 	*gen_matrix_size = ((size_t)gen_matrix_side * (size_t)gen_matrix_side + 1);
 	fprintf(stdout, "INFO: required data size is %llu MB.\n", gen_data_size);
 	fprintf(stdout, "INFO: AES matrix size is %llu bytes.\n", *gen_matrix_size);
-	/* Рассчитать количество матриц для генерации. */
+	/* ГђГ Г±Г±Г·ГЁГІГ ГІГј ГЄГ®Г«ГЁГ·ГҐГ±ГІГўГ® Г¬Г ГІГ°ГЁГ¶ Г¤Г«Гї ГЈГҐГ­ГҐГ°Г Г¶ГЁГЁ. */
 	*gen_len = (gen_data_size * MEGABYTE_SIZE) / *gen_matrix_size;
 	fprintf(stdout, "INFO: will generate array of %llu matrices.\n", *gen_len);
 	fprintf(stdout, "INFO: recalculated data size is %llu.\n", *gen_len * (*gen_matrix_size));
-	/* Выделить память и проверить. */
+	/* Г‚Г»Г¤ГҐГ«ГЁГІГј ГЇГ Г¬ГїГІГј ГЁ ГЇГ°Г®ГўГҐГ°ГЁГІГј. */
 	struct AESMatrix* gen_matrices = (struct AESMatrix*)malloc(sizeof(struct AESMatrix) * (*gen_len));
 	if (!gen_matrices) {
 		fprintf(stderr, "ERROR in main(): couldn't allocate memory for generated data.\n");
 		return (struct AESMatrix*)NULL;
 	}
-	/* Получить текущее время, проверить его корректность и задать сидом ГСЧ. */
+	/* ГЏГ®Г«ГіГ·ГЁГІГј ГІГҐГЄГіГ№ГҐГҐ ГўГ°ГҐГ¬Гї, ГЇГ°Г®ГўГҐГ°ГЁГІГј ГҐГЈГ® ГЄГ®Г°Г°ГҐГЄГІГ­Г®Г±ГІГј ГЁ Г§Г Г¤Г ГІГј Г±ГЁГ¤Г®Г¬ ГѓГ‘Г—. */
 	time_t rand_seed = time(NULL);
 	if (rand_seed == -1)
 		fprintf(stderr, "WARNING in generate_matrices(): couldn't get current time for random seed.\n");
 	srand((unsigned int)rand_seed);
-	/* Инициализировать и генерировать матрицы AES из случайных байт. */
+	/* Г€Г­ГЁГ¶ГЁГ Г«ГЁГ§ГЁГ°Г®ГўГ ГІГј ГЁ ГЈГҐГ­ГҐГ°ГЁГ°Г®ГўГ ГІГј Г¬Г ГІГ°ГЁГ¶Г» AES ГЁГ§ Г±Г«ГіГ·Г Г©Г­Г»Гµ ГЎГ Г©ГІ. */
 	for (size_t i = 0; i < *gen_len; i += 1) {
 		aes_matrix_init(&(gen_matrices[i]), gen_matrix_side);
 		aes_matrix_randomise(gen_matrices[i]);
@@ -464,7 +464,7 @@ char* aes_pack_matrices(struct AESMatrix* gen_matrices, size_t gen_len, size_t g
 		fprintf(stderr, "ERROR in aes_pack_matrices(): couldn't allocate memory for flattened data.\n");
 		return (char*)NULL;
 	}
-	/* Упаковать матрицу в массив чаров для передачи по TCP. */
+	/* Г“ГЇГ ГЄГ®ГўГ ГІГј Г¬Г ГІГ°ГЁГ¶Гі Гў Г¬Г Г±Г±ГЁГў Г·Г Г°Г®Гў Г¤Г«Гї ГЇГҐГ°ГҐГ¤Г Г·ГЁ ГЇГ® TCP. */
 	for (size_t i = 0; i < gen_len; i += 1) {
 		gen_chars[i * gen_matrix_size] = gen_matrices[i].side_len;
 		for (aesbyte_t j = 1; j <= gen_matrices[i].side_len * gen_matrices[i].side_len; j += 1) {
@@ -477,14 +477,14 @@ char* aes_pack_matrices(struct AESMatrix* gen_matrices, size_t gen_len, size_t g
 }
 
 int tcp_establish_conn_server(SOCKET* cl_socket) {
-	/* WSADATA содержит сведения о реализации сокетов в Windows. */
+	/* WSADATA Г±Г®Г¤ГҐГ°Г¦ГЁГІ Г±ГўГҐГ¤ГҐГ­ГЁГї Г® Г°ГҐГ Г«ГЁГ§Г Г¶ГЁГЁ Г±Г®ГЄГҐГІГ®Гў Гў Windows. */
 	WSADATA wsa_data;
 	int my_err;
-	/* Структуры addrinfo содержат данные об адресах и протоколах. */
+	/* Г‘ГІГ°ГіГЄГІГіГ°Г» addrinfo Г±Г®Г¤ГҐГ°Г¦Г ГІ Г¤Г Г­Г­Г»ГҐ Г®ГЎ Г Г¤Г°ГҐГ±Г Гµ ГЁ ГЇГ°Г®ГІГ®ГЄГ®Г«Г Гµ. */
 	struct addrinfo* result = NULL;
 	struct addrinfo hints;
-	/* WSAStartup запрашивает версию WinSocket 2.2 и не даёт клиентам
-	   использовать версию выше. */
+	/* WSAStartup Г§Г ГЇГ°Г ГёГЁГўГ ГҐГІ ГўГҐГ°Г±ГЁГѕ WinSocket 2.2 ГЁ Г­ГҐ Г¤Г ВёГІ ГЄГ«ГЁГҐГ­ГІГ Г¬
+	   ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ ГІГј ГўГҐГ°Г±ГЁГѕ ГўГ»ГёГҐ. */
 	fprintf(stdout, "INFO: initialising WinSocket2 on server.\n");
 	my_err = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (my_err) {
@@ -493,12 +493,12 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 		return -1;
 	}
 	memset(&hints, 0, sizeof(hints));
-	/* Задать соединение по протоколу TCP через сокет. */
+	/* Г‡Г Г¤Г ГІГј Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГҐ ГЇГ® ГЇГ°Г®ГІГ®ГЄГ®Г«Гі TCP Г·ГҐГ°ГҐГ§ Г±Г®ГЄГҐГІ. */
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
-	/* Разрешить собственный адрес и порт сервера. */
+	/* ГђГ Г§Г°ГҐГёГЁГІГј Г±Г®ГЎГ±ГІГўГҐГ­Г­Г»Г© Г Г¤Г°ГҐГ± ГЁ ГЇГ®Г°ГІ Г±ГҐГ°ГўГҐГ°Г . */
 	fprintf(stdout, "INFO: resolving local address and port on server.\n");
 	my_err = getaddrinfo(NULL, AES_PORT, &hints, &result);
 	if (my_err) {
@@ -506,7 +506,7 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 		WSACleanup();
 		return -1;
 	}
-	/* Создать сокет для прослушивания. */
+	/* Г‘Г®Г§Г¤Г ГІГј Г±Г®ГЄГҐГІ Г¤Г«Гї ГЇГ°Г®Г±Г«ГіГёГЁГўГ Г­ГЁГї. */
 	fprintf(stdout, "INFO: opening listening socket on server.\n");
 	SOCKET listening_socket = INVALID_SOCKET;
 	listening_socket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
@@ -516,7 +516,7 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 		WSACleanup();
 		return -1;
 	}
-	/* Привязать сокет. */
+	/* ГЏГ°ГЁГўГїГ§Г ГІГј Г±Г®ГЄГҐГІ. */
 	fprintf(stdout, "INFO: binding listening socket.\n");
 	my_err = bind(listening_socket, result->ai_addr, (int)result->ai_addrlen);
 	if (my_err == SOCKET_ERROR) {
@@ -527,7 +527,7 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 		return -1;
 	}
 	freeaddrinfo(result);
-	/* Ждать, пока не подключится клиент. */
+	/* Г†Г¤Г ГІГј, ГЇГ®ГЄГ  Г­ГҐ ГЇГ®Г¤ГЄГ«ГѕГ·ГЁГІГ±Гї ГЄГ«ГЁГҐГ­ГІ. */
 	fprintf(stdout, "INFO: server listening socket.\n");
 	if (listen(listening_socket, SOMAXCONN) == SOCKET_ERROR) {
 		printf("ERROR in tcp_send_matrices(): listening socket on server failed with code %d.\n", WSAGetLastError());
@@ -537,7 +537,7 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 	}
 	SOCKET client_socket;
 	client_socket = INVALID_SOCKET;
-	/* Принять подключение клиента при его появлении. */
+	/* ГЏГ°ГЁГ­ГїГІГј ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГҐ ГЄГ«ГЁГҐГ­ГІГ  ГЇГ°ГЁ ГҐГЈГ® ГЇГ®ГїГўГ«ГҐГ­ГЁГЁ. */
 	client_socket = accept(listening_socket, NULL, NULL);
 	if (client_socket == INVALID_SOCKET) {
 		printf("ERROR in tcp_send_matrices(): accepting client connection failed with code %d.\n", WSAGetLastError());
@@ -550,8 +550,8 @@ int tcp_establish_conn_server(SOCKET* cl_socket) {
 }
 
 int tcp_send_matrices(char* aes_data, size_t aes_datasize, SOCKET client_socket) {
-	/* Буферы для приёма метаинформации о размере данных,
-		а также для самих матриц. */
+	/* ГЃГіГґГҐГ°Г» Г¤Г«Гї ГЇГ°ГЁВёГ¬Г  Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ Г® Г°Г Г§Г¬ГҐГ°ГҐ Г¤Г Г­Г­Г»Гµ,
+		Г  ГІГ ГЄГ¦ГҐ Г¤Г«Гї Г±Г Г¬ГЁГµ Г¬Г ГІГ°ГЁГ¶. */
 	char tcp_datasize_buf[DEF_BUFLEN];
 	char* tcp_aes_data_sendbuf = aes_data;
 	int my_err;
@@ -561,7 +561,7 @@ int tcp_send_matrices(char* aes_data, size_t aes_datasize, SOCKET client_socket)
 		WSACleanup();
 		return -1;
 	}
-	/* Отправить клиенту метаинформацию о размере пересылаемых данных с матрицами. */
+	/* ГЋГІГЇГ°Г ГўГЁГІГј ГЄГ«ГЁГҐГ­ГІГі Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГѕ Г® Г°Г Г§Г¬ГҐГ°ГҐ ГЇГҐГ°ГҐГ±Г»Г«Г ГҐГ¬Г»Гµ Г¤Г Г­Г­Г»Гµ Г± Г¬Г ГІГ°ГЁГ¶Г Г¬ГЁ. */
 	my_err = send(client_socket, tcp_datasize_buf, (int)strlen(tcp_datasize_buf), 0);
 	if (my_err != SOCKET_ERROR)
 		fprintf(stdout, "INFO: server sent metainfo to client: %d bytes, buffer is \"%s\".\n", my_err, tcp_datasize_buf);
@@ -571,7 +571,7 @@ int tcp_send_matrices(char* aes_data, size_t aes_datasize, SOCKET client_socket)
 		WSACleanup();
 		return -1;
 	}
-	/* Отправить клиенту матрицы. */
+	/* ГЋГІГЇГ°Г ГўГЁГІГј ГЄГ«ГЁГҐГ­ГІГі Г¬Г ГІГ°ГЁГ¶Г». */
 	my_err = send(client_socket, tcp_aes_data_sendbuf, (int)aes_datasize, 0);
 	if (my_err != SOCKET_ERROR)
 		fprintf(stdout, "INFO: server sent matrices to client: %d bytes.\n", my_err);
@@ -585,7 +585,7 @@ int tcp_send_matrices(char* aes_data, size_t aes_datasize, SOCKET client_socket)
 }
 
 int tcp_send_time(int aes_time, SOCKET client_socket) {
-	/* Буфер для отправки информации о времени вычислений. */
+	/* ГЃГіГґГҐГ° Г¤Г«Гї Г®ГІГЇГ°Г ГўГЄГЁ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ Г® ГўГ°ГҐГ¬ГҐГ­ГЁ ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГ©. */
 	char tcp_time_buf[DEF_BUFLEN];
 	int my_err;
 	if (!_itoa(aes_time, tcp_time_buf, 10)) {
@@ -594,7 +594,7 @@ int tcp_send_time(int aes_time, SOCKET client_socket) {
 		WSACleanup();
 		return -1;
 	}
-	/* Отправить клиенту метаинформацию о времени вычислений. */
+	/* ГЋГІГЇГ°Г ГўГЁГІГј ГЄГ«ГЁГҐГ­ГІГі Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГѕ Г® ГўГ°ГҐГ¬ГҐГ­ГЁ ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГ©. */
 	my_err = send(client_socket, tcp_time_buf, (int)strlen(tcp_time_buf), 0);
 	if (my_err != SOCKET_ERROR)
 		fprintf(stdout, "INFO: sent time info: %d bytes, buffer is \"%s\".\n", my_err, tcp_time_buf);
@@ -611,7 +611,7 @@ int tcp_recv_time(SOCKET connect_socket) {
 	char tcp_time_recvbuf[DEF_BUFLEN];
 	int recv_res;
 	int tcp_time;
-	/* Принять метаинформацию о времени вычислений. */
+	/* ГЏГ°ГЁГ­ГїГІГј Г¬ГҐГІГ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГѕ Г® ГўГ°ГҐГ¬ГҐГ­ГЁ ГўГ»Г·ГЁГ±Г«ГҐГ­ГЁГ©. */
 	memset(tcp_time_recvbuf, 0, DEF_BUFLEN);
 	recv_res = recv(connect_socket, tcp_time_recvbuf, DEF_BUFLEN, 0);
 	if (recv_res == 0) {
